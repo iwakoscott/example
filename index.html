@@ -2,4 +2,6 @@
 layout: default
 ---
 
-{{ site.pages }}
+{% for p in site.pages %}
+  <h1>{{p.url}}</h1>
+{% endfor %}
