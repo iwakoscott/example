@@ -9,29 +9,34 @@ layout: default
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-    {% assign grouped_pages = site.html_pages | group_by: 'dir' %}
+      {% assign all = site.html_pages | group_by: "dir" %}
+      {% assign index = site.html_pages | group_by: "dir" | where: 'name', '/' %}
 
-    {% for group in grouped_pages %}
-      {% assign group_label = group.name | remove: '/'%}
-      {% if group_label.size == 0 %}
-        {% for p in group.items %}
-
-          {% unless p.name contains '404' or p.name contains 'index' %}
-            {% assign title = p.name | remove: '.markdown' | split: '-' | join: ' ' | capitalize %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{p.url}}">{{title}}</a>
-            </li>
+      {% for object in index %}
+        {% for item in object.items %}
+          {% unless item.name contains '404' or item.name contains 'index' %}
+            {% assign key = item.name | remove: '.markdown' | prepend: '/' | append: '/'%}
+            {% assign value = all | where: 'name', key %}
+            {% if value.size > 0 %}
+              <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="{{ item.url }}" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ item.title }}
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        {% for dropdown_item in value[0].items %}
+                          <a class="dropdown-item" href="{{ dropdown_item.url }}">{{ dropdown_item.title }}</a>
+                        {% endfor %}
+                      </div>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{item.url}}">{{item.title}}</a>
+              </li>
+            {% endif %}
           {% endunless %}
+        {% endfor %}
+      {% endfor %}
 
-        {% endfor %} <!-- for each page in index group -->
-      {% else %} <!-- otherwise group is other than index -->
-
-        {% for p in group.items %}
-
-        {% endfor %} <!-- for pages in group.items add as dropdown menu-->
-
-      {% endif %} <!-- if page group is index -->
-    {% endfor %} <!-- for each page group -->
     </ul>
   </div>
 </nav>
