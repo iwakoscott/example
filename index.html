@@ -2,6 +2,36 @@
 layout: default
 ---
 
-{% for file in site.html_pages %}
-  <p>{{file.dir}}</p><br />
-{% endfor %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+    {% assign grouped_pages = site.html_pages | group_by: 'dir' %}
+
+    {% for group in grouped_pages %}
+      {% assign group_label = group.name | remove: '/'%}
+      {% if group_label.size == 0 %}
+        {% for p in group.items %}
+
+          {% unless p.name contains '404' or p.name contains 'index' %}
+            {% assign title = p.name | remove: '.markdown' | split: '-' | join: ' ' | capitalize %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{p.url}}">{{title}}</a>
+            </li>
+          {% endunless %}
+
+        {% endfor %} <!-- for each page in index group -->
+      {% else %} <!-- otherwise group is other than index -->
+
+        {% for p in group.items %}
+
+        {% endfor %} <!-- for pages in group.items add as dropdown menu-->
+
+      {% endif %} <!-- if page group is index -->
+    {% endfor %} <!-- for each page group -->
+    </ul>
+  </div>
+</nav>
